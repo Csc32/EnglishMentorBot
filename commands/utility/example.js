@@ -1,9 +1,5 @@
-import { CohereClient } from "cohere-ai";
+import { cohere } from "../.././api/ia.js";
 import { SlashCommandBuilder } from "discord.js";
-
-const cohere = new CohereClient({
-  token: process.env.COHERE_API_KEY
-})
 
 const data = new SlashCommandBuilder()
   .setName('example')
