@@ -6,7 +6,8 @@ const data = new SlashCommandBuilder()
   .setDescription('Provides information about the user.');
 
 async function execute(interaction) {
-  await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);
+  await interaction.deferReply();
+  await interaction.editReply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);
 }
 
 export default {
