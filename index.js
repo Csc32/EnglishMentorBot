@@ -9,6 +9,7 @@ const token = process.env.BOT_TOKEN;
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
+client.cooldowns = new Collection();
 client.commands = new Collection();
 
 //save the dirname
@@ -35,7 +36,6 @@ for (const folder of commandFolders) {
   }
 
 }
-
 client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
   const command = interaction.client.commands.get(interaction.commandName);
@@ -45,6 +45,30 @@ client.on(Events.InteractionCreate, async interaction => {
     return
   }
 
+  const { cooldowns } = interaction.client;
+
+  if (!cooldowns.has(command.default.data.name)) {
+    cooldowns.set(command.default.data.name, new Collection())
+  }
+
+  const now = Date.now();
+
+  const timestamps = cooldowns.get(command.default.data.name);
+
+  const defaultCooldownDuration = 50;
+  const cooldownAmount = (command.default.cooldown ?? defaultCooldownDuration) * 1_000;
+
+  if (timestamps.has(interaction.user.id)) {
+    const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+
+    if (now < expirationTime) {
+      const timeLeft = (expirationTime - now) / 1_000;
+      return interaction.reply(`Please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.default.data.name}\` command.`);
+    }
+  }
+
+  timestamps.set(interaction.user.id, now);
+  setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
   try {
 
     await command.default.execute(interaction);
