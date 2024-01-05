@@ -2,13 +2,13 @@ import { cohere } from "../.././api/ia.js";
 import { SlashCommandBuilder } from "discord.js";
 
 const data = new SlashCommandBuilder()
-  .setName('example')
-  .setDescription('Generate an example about a specific topic').addStringOption(option => option.setRequired(true).setName("topic").setDescription("The topic of the example"))
+  .setName('vocabulary')
+  .setDescription('Generate a list specific vocabulary').addStringOption(option => option.setRequired(true).setName("input").setDescription("The vocabulary to be generated"))
 async function execute(interaction) {
   try {
     await interaction.deferReply();
     const res = await cohere.generate({
-      prompt: `Please generate just one example of ${interaction.options.getString('topic')}`,
+      prompt: `Please generate a list of vocabulary of: ${interaction.options.getString('input')}`,
       temperature: 1
     });
     await interaction.editReply({ content: res.generations[0].text });

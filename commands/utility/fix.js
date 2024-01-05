@@ -54,5 +54,6 @@ output: ""
 }
 export default {
   data,
-  execute
+  execute,
+  cooldown: 20
 }
